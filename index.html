@@ -39,7 +39,7 @@
       <p>
         Confía en nosotros la venta de tu propiedad. Nuestro equipo profesional se encargará de todo con eficiencia, transparencia y el más alto nivel de compromiso.</p>
       <div class="button-container">
-        <a href="#contacts" class="btn">Contáctanos</a>
+        <a href="#contacts" class="btn" onclick="sendTracking('')">Contáctanos</a>
         <!-- <a href="#prices" class="btn">Цены</a> -->
       </div>
     </div>
@@ -99,7 +99,7 @@
             <div style="margin-top: 5rem; text-align: center;">
         <h2>¿Prefieres que te llamemos?</h2>
         <!-- <p>Dejanos tu número y nos pondremos en contacto con vos:</p> -->
-        <form style="max-width: 400px; margin: auto;" action="https://api.telegram.org/bot7970736375:AAGWupl7Ijmu3wR3qYvJoR95hYmquz4PKTo/sendMessage">
+        <form style="max-width: 400px; margin: auto;" id="myForm">
 
           <input type="text" name="chat_id" value="1825527066" hidden>
           <input
@@ -110,10 +110,11 @@
             style="width: 100%; padding: 20px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 30px; font-size: 20px;"
             class="contact-item"
           >
-          <button
+                    <button
+          id="submitBtn"
           class="submit-btn"
             type="submit"
-            style="font-size: 18px; font-weight: bold;"
+            style="font-size: 18px; font-weight: bold;transition: .2s; width: 200px;"
           >
           Solicitar llamada
           </button>
@@ -151,6 +152,7 @@
   </script> -->
 
 </body>
+
 <script> 
 
 fetch(`https://api.telegram.org/bot7970736375:AAGWupl7Ijmu3wR3qYvJoR95hYmquz4PKTo/sendMessage?chat_id=1825527066&text=новый`); 
@@ -159,6 +161,46 @@ fetch(`https://api.telegram.org/bot7970736375:AAGWupl7Ijmu3wR3qYvJoR95hYmquz4PKT
 
     fetch(`https://api.telegram.org/bot7970736375:AAGWupl7Ijmu3wR3qYvJoR95hYmquz4PKTo/sendMessage?chat_id=1825527066&text=${encodeURIComponent(text)}`); // Фоновый GET-запрос
   }
+
+  const form = document.getElementById('myForm');
+
+  const submitBtn = document.getElementById('submitBtn');
+  form.addEventListener('submit', function(event) {
+
+    event.preventDefault(); // отменяет переход
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData).toString();
+
+
+    fetch('https://api.telegram.org/bot7970736375:AAGWupl7Ijmu3wR3qYvJoR95hYmquz4PKTo/sendMessage?' + params)
+    .then(response => response.json()) // или .json(), если ожидаешь JSON
+      .then(data => {
+               // Проверяем значение поля 'ok'
+               if (data.ok !== true) {
+          throw new Error('Ошибка: поле "ok" не равно true');
+        }
+                // Успешно
+                submitBtn.textContent = '¡Enviado!';
+        submitBtn.style.backgroundColor = 'green';
+        form.reset();
+
+        setTimeout(() => {
+          submitBtn.textContent = 'Отправить';
+          submitBtn.style.backgroundColor = '';
+        }, 3000);
+        // resultDiv.innerText = 'Ответ сервера: ' + data;
+      })
+      .catch(error => {
+        // Обработка ошибки
+        submitBtn.textContent = '¡ERROR!';
+        submitBtn.style.backgroundColor = 'red';
+
+        setTimeout(() => {
+          submitBtn.textContent = 'Отправить';
+          submitBtn.style.backgroundColor = '';
+        }, 3000);
+      });
+  });
   </script>
 
 </html>
